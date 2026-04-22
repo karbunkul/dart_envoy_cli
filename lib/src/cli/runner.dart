@@ -45,6 +45,7 @@ final class SmartEnvRunner extends CommandRunner {
     );
 
     addCommand(InitCommand());
+    addCommand(BuildCommand());
   }
 
   @override
