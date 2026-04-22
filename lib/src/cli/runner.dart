@@ -4,11 +4,17 @@ import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:envoy/src/cli/commands/commands.dart';
 
+import 'package:envoy/src/cli/commands/executor.dart';
+
 import 'helper.dart';
 
 @immutable
-final class SmartEnvRunner extends CommandRunner {
-  SmartEnvRunner() : super('envoy', '');
+final class EnvoyRunner extends CommandRunner {
+  EnvoyRunner()
+      : super(
+          'envoy',
+          'Envoy is a tool for managing environment variables and generating files from templates.',
+        );
 
   void _setup() {
     argParser.addOption(
@@ -66,10 +72,10 @@ final class SmartEnvRunner extends CommandRunner {
       final configFile = CliHelper.configFile(results[CliHelper.config]);
 
       if (configFile.existsSync()) {
-        return RunCommand(
+        return BuildExecutor(
           configFile: configFile,
           results: results,
-        ).run();
+        ).execute();
       }
     }
 

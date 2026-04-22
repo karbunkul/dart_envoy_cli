@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:args/command_runner.dart';
-import 'package:envoy/src/cli/commands/run.dart';
+import 'package:envoy/src/cli/commands/executor.dart';
 
 import '../base_command.dart';
 
@@ -20,9 +20,9 @@ class BuildCommand extends Command with BaseCommand {
       throw Exception('Config file ${file.path} not found');
     }
 
-    return RunCommand(
+    return BuildExecutor(
       configFile: file,
       results: globalResults!,
-    ).run();
+    ).execute();
   }
 }
