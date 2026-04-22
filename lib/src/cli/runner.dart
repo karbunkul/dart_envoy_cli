@@ -2,13 +2,13 @@ import 'package:args/command_runner.dart';
 import 'package:colorize/colorize.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
-import 'package:smart_env/src/cli/commands/commands.dart';
+import 'package:envoy/src/cli/commands/commands.dart';
 
 import 'helper.dart';
 
 @immutable
 final class SmartEnvRunner extends CommandRunner {
-  SmartEnvRunner() : super('smart-env', '');
+  SmartEnvRunner() : super('envoy', '');
 
   void _setup() {
     argParser.addOption(

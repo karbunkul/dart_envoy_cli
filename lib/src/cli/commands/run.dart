@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:prompts/prompts.dart' as prompts;
-import 'package:smart_env/src/cli/helper.dart';
+import 'package:envoy/src/cli/helper.dart';
 
 import '../../config/config.dart';
 
@@ -16,7 +16,7 @@ import '../../config/config.dart';
 class RunCommand {
   final File configFile;
   final ArgResults results;
-  static Logger _logger = Logger('smart-env');
+  static Logger _logger = Logger('envoy');
 
   const RunCommand({required this.configFile, required this.results});
 

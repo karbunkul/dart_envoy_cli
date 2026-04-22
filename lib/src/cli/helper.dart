@@ -52,7 +52,7 @@ class CliHelper {
     }
 
     return File(
-      p.normalize(p.absolute('smart-env.yaml')),
+      p.normalize(p.absolute('envoy.yaml')),
     ).absolute;
   }
 }

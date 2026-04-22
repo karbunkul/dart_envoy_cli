@@ -27,5 +27,5 @@ mixin BaseCommand on Command {
     return false;
   }
 
-  Logger get logger => Logger('smart-env');
+  Logger get logger => Logger('envoy');
 }
