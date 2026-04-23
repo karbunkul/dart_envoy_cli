@@ -13,29 +13,61 @@ class InitCommand extends Command with BaseCommand {
   String get name => 'init';
 
   @override
-  FutureOr run() async {
+  Future<void> run() async {
     final file = configFile();
 
     if (file.existsSync() && !force) {
       final rewrite = logger.confirm(
-        'Rewrite current config?',
-        defaultValue: true,
+        'Config file already exists (${file.path}). Overwrite?',
+        defaultValue: false,
       );
 
       if (!rewrite) {
-        return exit(1);
+        logger.info('Aborted.');
+        return;
       }
     }
 
-    file.writeAsStringSync(_config);
-    logger.success('Save config in ${file.path}');
+    final progress = logger.progress('Creating config file');
+    try {
+      if (!file.parent.existsSync()) {
+        file.parent.createSync(recursive: true);
+      }
+      file.writeAsStringSync(_config);
+      progress.complete('Created config file: ${file.path}');
+    } catch (e) {
+      progress.fail('Failed to create config file: $e');
+    }
   }
 }
 
 const _config = '''
----
-version: 1
+# Envoy Configuration File
+# For more information, see: https://github.com/karbunkul/envoy
 
+version: 1.0
+
+# Define constraints for your variables
+constraints:
+  - name: port_range
+    rules:
+      minimum: 1024
+      maximum: 65535
+
+# List of variables to be loaded from environment or virtual sources
 variables:
-  - name: FOO
+  - name: APP_NAME
+    castTo: string
+  - name: PORT
+    castTo: int
+    constraint: port_range
+  - name: DEBUG
+    castTo: boolean
+    virtual:
+      exec: "echo true"
+
+# Templates to be processed
+templates:
+  - template: templates/config.g.dart.mustache
+    output: lib/config.g.dart
 ''';

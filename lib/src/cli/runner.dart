@@ -41,7 +41,7 @@ final class EnvoyRunner extends CommandRunner {
     argParser.addFlag(
       CliHelper.verbose,
       help: 'Output log information',
-      abbr: 'd',
+      abbr: 'v',
       defaultsTo: false,
     );
 
@@ -100,6 +100,4 @@ final class EnvoyRunner extends CommandRunner {
       return ExitCode.software.code;
     }
   }
-
-  // Remove _verbose method as mason_logger handles levels internally
 }
