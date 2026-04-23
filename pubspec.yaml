@@ -11,6 +11,7 @@ dependencies:
   dotenv: ^4.1.0
   json_schema: ^5.1.3
   logging: ^1.2.0
+  interact: ^2.1.1
   mason_logger: ^0.2.13
   meta: ^1.11.0
   mustache_template: ^2.0.0
