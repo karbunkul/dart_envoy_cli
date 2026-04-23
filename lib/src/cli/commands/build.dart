@@ -23,6 +23,7 @@ class BuildCommand extends Command with BaseCommand {
     return BuildExecutor(
       configFile: file,
       results: globalResults!,
+      logger: logger,
     ).execute();
   }
 }

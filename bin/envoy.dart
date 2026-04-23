@@ -1,15 +1,13 @@
-import 'dart:async';
 import 'dart:io';
 
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:envoy/envoy.dart';
 
-void main(List<String> args) {
-  runZonedGuarded(() => EnvoyRunner().run(args), (error, stack) {
-    Logger('envoy')..severe(error, stack);
+Future<void> main(List<String> args) async {
+  final logger = Logger();
+  final runner = EnvoyRunner(logger: logger);
 
-    print(stack);
+  final exitCode = await runner.run(args);
 
-    exit(1);
-  });
+  exit(exitCode);
 }

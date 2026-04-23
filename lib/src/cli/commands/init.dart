@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:prompts/prompts.dart' as prompts;
 
 import '../base_command.dart';
 
@@ -18,9 +17,9 @@ class InitCommand extends Command with BaseCommand {
     final file = configFile();
 
     if (file.existsSync() && !force) {
-      final rewrite = prompts.getBool(
+      final rewrite = logger.confirm(
         'Rewrite current config?',
-        defaultsTo: true,
+        defaultValue: true,
       );
 
       if (!rewrite) {
@@ -29,7 +28,7 @@ class InitCommand extends Command with BaseCommand {
     }
 
     file.writeAsStringSync(_config);
-    logger.info('Save config in ${file.path}');
+    logger.success('Save config in ${file.path}');
   }
 }
 

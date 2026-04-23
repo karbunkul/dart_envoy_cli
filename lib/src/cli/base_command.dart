@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 
 import '../config/config.dart';
+import '../cli/runner.dart';
 import 'helper.dart';
 
 mixin BaseCommand on Command {
@@ -27,5 +28,5 @@ mixin BaseCommand on Command {
     return false;
   }
 
-  Logger get logger => Logger('envoy');
+  Logger get logger => (runner as EnvoyRunner).logger;
 }

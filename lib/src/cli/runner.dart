@@ -1,6 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:colorize/colorize.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:envoy/src/cli/commands/commands.dart';
 
@@ -10,8 +9,11 @@ import 'helper.dart';
 
 @immutable
 final class EnvoyRunner extends CommandRunner {
-  EnvoyRunner()
-      : super(
+  final Logger logger;
+
+  EnvoyRunner({Logger? logger})
+      : logger = logger ?? Logger(),
+        super(
           'envoy',
           'Envoy is a tool for managing environment variables and generating files from templates.',
         );
@@ -55,55 +57,49 @@ final class EnvoyRunner extends CommandRunner {
   }
 
   @override
-  Future run(Iterable<String> args) async {
-    // setup runner, init args
-    _setup();
+  Future<int> run(Iterable<String> args) async {
+    try {
+      _setup();
+      final results = parse(args);
 
-    final results = parse(args);
-    _verbose(verbose: results[CliHelper.verbose]);
-
-    if (results.command?.name == null) {
-      final runArguments = results.arguments;
-
-      if (runArguments.contains('--help') || runArguments.contains('-h')) {
-        return super.run(args);
+      if (results[CliHelper.verbose] == true) {
+        logger.level = Level.verbose;
       }
 
-      final configFile = CliHelper.configFile(results[CliHelper.config]);
+      if (results.command?.name == null) {
+        final runArguments = results.arguments;
 
-      if (configFile.existsSync()) {
-        return BuildExecutor(
-          configFile: configFile,
-          results: results,
-        ).execute();
+        if (runArguments.contains('--help') || runArguments.contains('-h')) {
+          printUsage();
+          return ExitCode.success.code;
+        }
+
+        final configFile = CliHelper.configFile(results[CliHelper.config]);
+
+        if (configFile.existsSync()) {
+          await BuildExecutor(
+            configFile: configFile,
+            results: results,
+            logger: logger,
+          ).execute();
+          return ExitCode.success.code;
+        }
       }
+
+      final result = await super.run(args);
+      return result ?? ExitCode.success.code;
+    } on UsageException catch (e) {
+      logger.err(e.message);
+      logger.info(e.usage);
+      return ExitCode.usage.code;
+    } catch (e, st) {
+      logger.err(e.toString());
+      if (logger.level == Level.verbose) {
+        logger.detail(st.toString());
+      }
+      return ExitCode.software.code;
     }
-
-    return super.run(args);
   }
 
-  void _verbose({bool verbose = false}) {
-    Logger.root.level = Level.ALL;
-
-    Logger.root.onRecord.listen((record) {
-      if (verbose || record.level == Level.SEVERE) {
-        final levelName = switch (record.level) {
-          Level.SEVERE => 'ERROR',
-          _ => record.level.name,
-        };
-        Colorize level = Colorize('[${levelName}]');
-        level.bold();
-
-        level = switch (record.level) {
-          Level.INFO => level.blue(),
-          Level.SEVERE => level.red(),
-          Level.WARNING => level.yellow(),
-          _ => level,
-        };
-
-        final time = record.time.toString().substring(0, 19);
-        print('$level: $time: ${record.message}');
-      }
-    });
-  }
+  // Remove _verbose method as mason_logger handles levels internally
 }
