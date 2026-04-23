@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dotenv/dotenv.dart';
 import 'package:json_schema/json_schema.dart';
+import 'package:interact/interact.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
@@ -35,6 +36,10 @@ class BuildExecutor {
         return;
       }
 
+      logger.detail('Config version: ${config.version}');
+      logger.detail('Loaded ${config.variables.length} variables');
+      logger.detail('Loaded ${config.templates.length} templates');
+
       final env = _initEnv();
       final force = results[CliHelper.force];
 
@@ -45,6 +50,21 @@ class BuildExecutor {
       final outputDir = CliHelper.outputDir(results[CliHelper.output]);
 
       for (final template in config.templates) {
+        final outputFile =
+            File(p.normalize(p.join(outputDir, template.output)));
+
+        if (outputFile.existsSync() && !force) {
+          final rewrite = Confirm(
+            prompt: 'File ${outputFile.path} already exists. Overwrite?',
+            defaultValue: true,
+          ).interact();
+
+          if (!rewrite) {
+            logger.info('Skipped ${outputFile.path}');
+            continue;
+          }
+        }
+
         final templateProgress =
             logger.progress('Processing ${template.output}');
 
@@ -53,22 +73,6 @@ class BuildExecutor {
             vars: Map.unmodifiable(context),
             workDir: configDir,
           );
-
-          final outputFile =
-              File(p.normalize(p.join(outputDir, template.output)));
-
-          if (outputFile.existsSync() && !force) {
-            templateProgress.update('Waiting for confirmation...');
-            final rewrite = logger.confirm(
-              'File ${outputFile.path} already exists. Overwrite?',
-              defaultValue: false,
-            );
-
-            if (!rewrite) {
-              templateProgress.fail('Skipped ${outputFile.path}');
-              continue;
-            }
-          }
 
           outputFile
             ..createSync(recursive: true)

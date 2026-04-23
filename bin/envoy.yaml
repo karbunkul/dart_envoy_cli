@@ -3,23 +3,28 @@ version: 1
 
 variables:
   - name: PORT
+    summary: Port to listen on
     castTo: int
 
   - name: DEBUG_MODE
+    summary: Enable debug mode
     castTo: boolean
 
   - name: BASE_AUTH
+    summary: Username and password for basic auth
     castTo: string
 
   - name: GIT_BRANCH
+    summary: Current git branch
     virtual:
       exec: git rev-parse --abbrev-ref HEAD
 
   - name: PWD
+    summary: Current working directory
     exec:
       linux: pwd
-      macos: pwd
-      windows: cd
+      darwin: pwd
+      windows: dir
 
 templates:
   - output: dist/config.dart

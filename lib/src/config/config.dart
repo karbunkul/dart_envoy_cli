@@ -92,10 +92,13 @@ final class _ConfigImporter {
 
       if (variable.containsKey('virtual')) {
         newVirtual = Virtual.from(variable['virtual']);
+      } else if (variable.containsKey('exec')) {
+        newVirtual = Virtual.from(variable);
       }
 
       final importVar = Variable(
         name: variable['name'],
+        summary: variable['summary'],
         castTo: newCastTo,
         constraint: newConstraint,
         virtual: newVirtual,

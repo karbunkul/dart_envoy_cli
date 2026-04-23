@@ -54,6 +54,7 @@ final class EnvoyRunner extends CommandRunner {
 
     addCommand(InitCommand());
     addCommand(BuildCommand());
+    addCommand(VariableCommand());
   }
 
   @override
