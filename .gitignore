@@ -5,3 +5,4 @@
 pubspec.lock
 .dart_tool
 .idea
+dist
