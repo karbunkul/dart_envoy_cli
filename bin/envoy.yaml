@@ -4,6 +4,7 @@ version: 1
 variables:
   - name: PORT
     summary: Port to listen on
+    constraint: portRange
     castTo: int
 
   - name: DEBUG_MODE
@@ -13,6 +14,8 @@ variables:
   - name: BASE_AUTH
     summary: Username and password for basic auth
     castTo: string
+    constraints:
+      pattern: "^.+:.+$"
 
   - name: GIT_BRANCH
     summary: Current git branch
@@ -25,6 +28,12 @@ variables:
       linux: pwd
       darwin: pwd
       windows: dir
+
+constraints:
+  - name: portRange
+    rules:
+      minimum: 1024
+      maximum: 65535
 
 templates:
   - output: dist/config.dart

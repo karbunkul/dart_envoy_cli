@@ -77,15 +77,31 @@ final class _ConfigImporter {
           : CastType.string;
 
       final constraint = variable['constraint'];
+      final inlineConstraints = variable['constraints'];
       CastConstraint? newConstraint;
-      if (constraint != null) {
-        final constraints = (json['constraints'] as List).firstWhere(
-          (e) => e['name'] == constraint,
-        );
+
+      if (inlineConstraints is Map) {
         newConstraint = CastConstraint(
-          name: constraint,
-          rules: constraints['rules'],
+          name: 'inline',
+          rules: Map<String, dynamic>.from(inlineConstraints),
         );
+      } else if (constraint != null) {
+        final globalConstraints = json['constraints'] as List?;
+        final found = globalConstraints?.firstWhere(
+          (e) => e['name'] == constraint,
+          orElse: () => null,
+        );
+
+        if (found != null) {
+          newConstraint = CastConstraint(
+            name: constraint,
+            rules: found['rules'],
+          );
+        } else {
+          throw ArgumentError(
+            'Constraint "$constraint" not found in global constraints list',
+          );
+        }
       }
 
       Virtual? newVirtual;

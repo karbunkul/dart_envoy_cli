@@ -14,6 +14,9 @@ class VariableCommand extends Command with BaseCommand {
   String get description => 'Manage and inspect variables';
 
   @override
+  List<String> get aliases => ['var'];
+
+  @override
   String get name => 'variable';
 
   @override
@@ -68,15 +71,26 @@ class ListVariablesCommand extends Command with BaseCommand {
       }
 
       progress.complete('Variables inspection:');
+      logger.info(
+        darkGray.wrap(
+            '  (Note: Showing resolved values without constraint validation)'),
+      );
       logger.info('');
 
       for (final variable in config.variables) {
         final name = variable.name.toUpperCase();
         final type = variable.castTo.name;
         final summary = variable.summary ?? 'No description';
-        final constraint = variable.hasConstraint
-            ? 'rules: ${variable.constraint!.rules}'
-            : 'None';
+
+        String constraintStr = 'None';
+        if (variable.hasConstraint) {
+          final c = variable.constraint!;
+          if (c.name == 'inline') {
+            constraintStr = 'inline rules: ${c.rules}';
+          } else {
+            constraintStr = '${cyan.wrap(c.name)} (rules: ${c.rules})';
+          }
+        }
 
         String resolvedValue;
         String? error;
@@ -99,7 +113,7 @@ class ListVariablesCommand extends Command with BaseCommand {
         // Вывод информации о переменной
         logger.info('${lightCyan.wrap(name)} ${darkGray.wrap('($type)')}');
         logger.info('  ${white.wrap('Description:')} $summary');
-        logger.info('  ${white.wrap('Constraint:')} $constraint');
+        logger.info('  ${white.wrap('Constraint:')} $constraintStr');
 
         final valueColor = resolvedValue == 'NOT SET'
             ? darkGray
