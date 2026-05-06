@@ -1,5 +1,6 @@
 ---
 version: 1
+exec: echo "App is running on branch $GIT_BRANCH"
 
 variables:
   - name: PORT

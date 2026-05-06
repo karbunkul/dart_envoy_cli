@@ -15,10 +15,12 @@ part 'variable.dart';
 final class Config {
   final List<Variable> variables;
   final List<BaseTemplate> templates;
+  final String? executable;
 
   Config({
     required this.variables,
     required this.templates,
+    this.executable,
   });
 
   double get version => 1.0;
@@ -38,6 +40,7 @@ final class _ConfigImporter {
     return Config(
       variables: _variables,
       templates: _templates,
+      executable: json['exec'],
     );
   }
 

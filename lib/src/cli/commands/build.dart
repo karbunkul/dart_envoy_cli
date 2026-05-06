@@ -12,6 +12,15 @@ class BuildCommand extends Command with BaseCommand {
   @override
   String get name => 'build';
 
+  BuildCommand() {
+    argParser.addOption(
+      'exec',
+      abbr: 'x',
+      help:
+          'Execute a command after build. If no value provided, uses "exec" from config.',
+    );
+  }
+
   @override
   FutureOr run() async {
     final file = configFile();
@@ -20,7 +29,7 @@ class BuildCommand extends Command with BaseCommand {
       throw Exception('Config file ${file.path} not found');
     }
 
-    return BuildExecutor(
+    return EnvoyExecutor(
       configFile: file,
       results: globalResults!,
       logger: logger,

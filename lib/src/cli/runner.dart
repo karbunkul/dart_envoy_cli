@@ -55,6 +55,7 @@ final class EnvoyRunner extends CommandRunner {
     addCommand(InitCommand());
     addCommand(BuildCommand());
     addCommand(VariableCommand());
+    addCommand(ValidateCommand());
   }
 
   @override
@@ -78,7 +79,7 @@ final class EnvoyRunner extends CommandRunner {
         final configFile = CliHelper.configFile(results[CliHelper.config]);
 
         if (configFile.existsSync()) {
-          await BuildExecutor(
+          await EnvoyExecutor(
             configFile: configFile,
             results: results,
             logger: logger,
